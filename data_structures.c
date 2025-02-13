@@ -175,6 +175,10 @@ void hashmap_put(hashmap_t *map, char *key, void *data)
 	}
 	else
 	{
+		if (map->data_destroy)
+		{
+			map->data_destroy(old_entry->data);
+		}
 		old_entry->data = data;
 	}
 }

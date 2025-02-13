@@ -1,12 +1,19 @@
 #include "utils.h"
 
-color_t color_create(float r, float g, float b, float a)
+long read_line(FILE *file, char *buf)
 {
-	color_t color;
-	color.r = r;
-	color.g = g;
-	color.b = b;
-	color.a = a;
-
-	return color;
+	long read = 0;
+	char ch;
+	while (1)
+	{
+		fread(&ch, sizeof(char), 1, file);
+		if (ch == '\n' || feof(file))
+		{
+			break;
+		}
+		buf[read] = ch;
+		read++;
+	}
+	buf[read] = '\0';
+	return (read == 0 && feof(file)) ? -1 : read;
 }
