@@ -5,6 +5,8 @@
 
 #include "utils.h"
 #include "error.h"
+#include "matrix.h"
+#include "data_structures.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -23,24 +25,18 @@ void processInput(GLFWwindow *window)
 int main(void)
 {	
 	glfwInit();
-	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
 		
 	GLFWwindow *window = glfwCreateWindow(800, 600, "VoxTale", NULL, NULL);
-	if (window == NULL)
-	{
-		fprintf(stdout, "window could not be created\n");
-		glfwTerminate();
-		return ERR_WINDOW_CREATE;
-	}
+	ASSERT(window, ERR_WINDOW_CREATE);
 	glfwMakeContextCurrent(window);
 	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		fprintf(stdout, "could not load glad\n");
+		fprintf(stderr, "could not load glad\n");
 		return ERR_GLAD_LOAD;
 	}
 		
