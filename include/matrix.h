@@ -61,6 +61,12 @@ mat4 *mat4_mulc(mat4 *matrix1, mat4 *matrix2);
 mat4 *mat4_rotatexr(float angle);
 mat4 *mat4_rotateyr(float angle);
 mat4 *mat4_rotatezr(float angle);
+mat4 *mat4_rotatexd(float angle);
+mat4 *mat4_rotateyd(float angle);
+mat4 *mat4_rotatezd(float angle);
+
+mat4 *mat4_translate(float x, float y, float z);
+mat4 *mat4_scale(float x, float y, float z);
 
 mat4 *mat4_transpose(mat4 *matrix);
 

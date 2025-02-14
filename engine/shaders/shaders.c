@@ -21,8 +21,8 @@ unsigned int shader_get_default(void)
 		"}\0";
 
 		const char *const fragment_code = 
-		"#version 460 core"
-		"out vec4 FragColor;"
+		"#version 460 core\n"
+		"out vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"
 		"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
@@ -62,8 +62,8 @@ unsigned int shader_get_default(void)
 
 unsigned int shader_load(char *vertex_file, char *fragment_file)
 {
-	FILE *vfile = fopen(vertex_file, "rt");
-	FILE *ffile = fopen(fragment_file, "rt");
+	FILE *vfile = fopen(vertex_file, "rb");
+	FILE *ffile = fopen(fragment_file, "rb");
 	ASSERT(vfile && ffile, ERR_FILE_OPEN);
 
 	size_t vfile_size, ffile_size;
@@ -87,14 +87,15 @@ unsigned int shader_load(char *vertex_file, char *fragment_file)
 	int compile_status;
 	unsigned int vertex_shader;
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, (const char * const *)&vertex_code, NULL);
+	glShaderSource(vertex_shader, 1, (const char **)&vertex_code, NULL);
 	glCompileShader(vertex_shader);
 	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_status);
 	ASSERT(compile_status, ERR_VSHADER_COMPILE);
 
+
 	unsigned int fragment_shader;
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1,  (const char * const *)&fragment_code, NULL);
+	glShaderSource(fragment_shader, 1, (const char **)&fragment_code, NULL);
 	glCompileShader(fragment_shader);
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_status);
 	ASSERT(compile_status, ERR_FSHADER_COMPILE);
@@ -115,4 +116,20 @@ unsigned int shader_load(char *vertex_file, char *fragment_file)
 	fclose(ffile);
 
 	return shader_program;
+}
+
+void shader_set_mat4(unsigned int shader, char *uniform, float **mat)
+{
+	glUniformMatrix4fv(glGetUniformLocation(shader, uniform),
+						1, GL_FALSE, (const float *)mat);
+}
+
+void shader_set_target(unsigned int shader)
+{
+	glUseProgram(shader);
+}
+
+void shader_reset_target(void)
+{
+	glUseProgram(default_shader);
 }

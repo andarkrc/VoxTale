@@ -1,6 +1,8 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+#include <stdio.h>
+
 typedef enum
 {
 	ERR_SUCCESS = 0,
@@ -13,13 +15,14 @@ typedef enum
 	ERR_FILE_OPEN
 } ERROR_TYPE;
 
-#define ASSERT(condition, error_code) 	\
-		do 								\
-		{  								\
-			if (!(condition))				\
-			{							\
-				exit(error_code);		\
-			}							\
+#define ASSERT(condition, error_code)			 	\
+		do 											\
+		{  											\
+			if (!(condition))						\
+			{										\
+				fprintf(stderr, "%d", error_code);	\
+				exit(error_code);					\
+			}										\
 		} while(0)
 
 #endif

@@ -333,6 +333,17 @@ mat4 *mat4_translate(float x, float y, float z)
 	return mat;
 }
 
+mat4 *mat4_scale(float x, float y, float z)
+{
+	mat4 *mat = mat4_identity();
+	
+	mat->val[0][0] = x;
+	mat->val[1][1] = y;
+	mat->val[2][2] = z;
+
+	return mat;
+}
+
 mat4 *mat4_transpose(mat4 *matrix)
 {
 	for (int i = 0; i < 4; i++)
