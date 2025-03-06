@@ -5,7 +5,8 @@
 
 typedef struct
 {
-	float val[4][4];
+	float data[16];
+	float *val[4];
 } mat4;
 
 typedef union
@@ -68,10 +69,21 @@ mat4 *mat4_rotatezd(float angle);
 mat4 *mat4_translate(float x, float y, float z);
 mat4 *mat4_scale(float x, float y, float z);
 
+mat4 *mat4_update_rotatexr(mat4 *mat, float angle);
+mat4 *mat4_update_rotateyr(mat4 *mat, float angle);
+mat4 *mat4_update_rotatezr(mat4 *mat, float angle);
+mat4 *mat4_update_rotatexd(mat4 *mat, float angle);
+mat4 *mat4_update_rotateyd(mat4 *mat, float angle);
+mat4 *mat4_update_rotatezd(mat4 *mat, float angle);
+
+mat4 *mat4_update_translate(mat4 *mat, float x, float y, float z);
+mat4 *mat4_update_scale(mat4 *mat, float x, float y, float z);
+
 mat4 *mat4_transpose(mat4 *matrix);
 
 mat4 *mat4_ortho(float left, float right, float bottom, float top, float znear, float zfar);
-mat4 *mat4_perspective(float fovy, float aspect, float znear, float zfar);
+mat4 *mat4_perspectiver(float fovy, float aspect, float znear, float zfar);
+mat4 *mat4_perspectived(float fovy, float aspect, float znear, float zfar);
 mat4 *mat4_lookat(vec3 *pos, vec3 *target, vec3 *up);
 mat4 *mat4_lookatc(vec3 *pos, vec3 *target, vec3 *up);
 

@@ -1,0 +1,1 @@
+.\build.bat && .\t.exe

@@ -118,10 +118,21 @@ unsigned int shader_load(char *vertex_file, char *fragment_file)
 	return shader_program;
 }
 
-void shader_set_mat4(unsigned int shader, char *uniform, float **mat)
+void shader_set_mat4(unsigned int shader, char *uniform, mat4 *mat)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader, uniform),
-						1, GL_FALSE, (const float *)mat);
+						1, GL_FALSE, (const float *)mat->data);
+}
+
+void shader_set_vec3(unsigned int shader, char *uniform, vec3 *vec)
+{
+	glUniform3fv(glGetUniformLocation(shader, uniform),
+				1, (const float *)vec->val);
+}
+
+void shader_set_int(unsigned int shader, char *uniform, int val)
+{
+	glUniform1i(glGetUniformLocation(shader, uniform), val);
 }
 
 void shader_set_target(unsigned int shader)

@@ -7,6 +7,10 @@ mat4 *mat4_create(void)
 {
 	mat4 *mat = malloc(sizeof(*mat));
 	ASSERT(mat, ERR_MEM_FAIL);
+	mat->val[0] = mat->data;
+	mat->val[1] = mat->data + 4;
+	mat->val[2] = mat->data + 8;
+	mat->val[3] = mat->data + 12;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -259,10 +263,30 @@ mat4 *mat4_rotatexr(float angle)
 	return mat;
 }
 
+mat4 *mat4_update_rotatexr(mat4 *mat, float angle)
+{
+	mat->val[1][1] = cos(angle);
+	mat->val[2][1] = -sin(angle);
+	mat->val[1][2] = sin(angle);
+	mat->val[2][2] = cos(angle);
+
+	return mat;
+}
+
 mat4 *mat4_rotateyr(float angle)
 {
 	mat4 *mat = mat4_identity();
 
+	mat->val[0][0] = cos(angle);
+	mat->val[2][0] = sin(angle);
+	mat->val[0][2] = -sin(angle);
+	mat->val[2][2] = cos(angle); 
+
+	return mat;
+}
+
+mat4 *mat4_update_rotateyr(mat4 *mat, float angle)
+{
 	mat->val[0][0] = cos(angle);
 	mat->val[2][0] = sin(angle);
 	mat->val[0][2] = -sin(angle);
@@ -278,7 +302,17 @@ mat4 *mat4_rotatezr(float angle)
 	mat->val[0][0] = cos(angle);
 	mat->val[1][0] = -sin(angle);
 	mat->val[0][1] = sin(angle);
-	mat->val[2][2] = cos(angle);
+	mat->val[1][1] = cos(angle);
+
+	return mat;
+}
+
+mat4 *mat4_update_rotatezr(mat4 *mat, float angle)
+{
+	mat->val[0][0] = cos(angle);
+	mat->val[1][0] = -sin(angle);
+	mat->val[0][1] = sin(angle);
+	mat->val[1][1] = cos(angle);
 
 	return mat;
 }
@@ -287,6 +321,18 @@ mat4 *mat4_rotatexd(float angle)
 {
 	angle = angle * M_PI / 180;
 	mat4 *mat = mat4_identity();
+
+	mat->val[1][1] = cos(angle);
+	mat->val[2][1] = -sin(angle);
+	mat->val[1][2] = sin(angle);
+	mat->val[2][2] = cos(angle);
+
+	return mat;
+}
+
+mat4 *mat4_update_rotatexd(mat4 *mat, float angle)
+{
+	angle = angle * M_PI / 180;
 
 	mat->val[1][1] = cos(angle);
 	mat->val[2][1] = -sin(angle);
@@ -309,6 +355,18 @@ mat4 *mat4_rotateyd(float angle)
 	return mat;
 }
 
+mat4 *mat4_update_rotateyd(mat4 *mat, float angle)
+{
+	angle = angle * M_PI / 180;
+
+	mat->val[0][0] = cos(angle);
+	mat->val[2][0] = sin(angle);
+	mat->val[0][2] = -sin(angle);
+	mat->val[2][2] = cos(angle); 
+
+	return mat;
+}
+
 mat4 *mat4_rotatezd(float angle)
 {
 	angle = angle * M_PI / 180;
@@ -317,7 +375,19 @@ mat4 *mat4_rotatezd(float angle)
 	mat->val[0][0] = cos(angle);
 	mat->val[1][0] = -sin(angle);
 	mat->val[0][1] = sin(angle);
-	mat->val[2][2] = cos(angle);
+	mat->val[1][1] = cos(angle);
+
+	return mat;
+}
+
+mat4 *mat4_update_rotatezd(mat4 *mat, float angle)
+{
+	angle = angle * M_PI / 180;
+
+	mat->val[0][0] = cos(angle);
+	mat->val[1][0] = -sin(angle);
+	mat->val[0][1] = sin(angle);
+	mat->val[1][1] = cos(angle);
 
 	return mat;
 }
@@ -333,10 +403,28 @@ mat4 *mat4_translate(float x, float y, float z)
 	return mat;
 }
 
+mat4 *mat4_update_translate(mat4 *mat, float x, float y, float z)
+{
+	mat->val[3][0] = x;
+	mat->val[3][1] = y; // these might need to be negated
+	mat->val[3][2] = z;
+
+	return mat;
+}
+
 mat4 *mat4_scale(float x, float y, float z)
 {
 	mat4 *mat = mat4_identity();
 	
+	mat->val[0][0] = x;
+	mat->val[1][1] = y;
+	mat->val[2][2] = z;
+
+	return mat;
+}
+
+mat4 *mat4_update_scale(mat4 *mat, float x, float y, float z)
+{
 	mat->val[0][0] = x;
 	mat->val[1][1] = y;
 	mat->val[2][2] = z;
@@ -366,15 +454,30 @@ mat4 *mat4_ortho(float left, float right, float bottom, float top, float znear, 
 	mat->val[0][0] = 2.0 / (right - left);
 	mat->val[1][1] = 2.0 / (top - bottom);
 	mat->val[2][2] = -2.0 / (zfar - znear);
-	mat->val[3][0] = - (right + left) / (right - left);
-	mat->val[3][1] = - (top + bottom) / (top - bottom);
-	mat->val[3][2] = - (zfar + znear) / (zfar - znear);
+	mat->val[0][3] = - (right + left) / (right - left);
+	mat->val[1][3] = - (top + bottom) / (top - bottom);
+	mat->val[2][3] = - (zfar + znear) / (zfar - znear);
 
 	return mat;
 }
 
-mat4 *mat4_perspective(float fovy, float aspect, float znear, float zfar)
+mat4 *mat4_perspectiver(float fovy, float aspect, float znear, float zfar)
 {
+	mat4 *mat = mat4_identity();
+	
+	float tanfovy = tan(fovy / 2.0);
+	mat->val[0][0] = 1.0 / (aspect * tanfovy);
+	mat->val[1][1] = 1.0 / tanfovy;
+	mat->val[2][2] = -(zfar + znear) / (zfar - znear);
+	mat->val[2][3] = -1.0;
+	mat->val[3][2] = -(2.0 * zfar * znear) / (zfar - znear);
+
+	return mat;
+}
+
+mat4 *mat4_perspectived(float fovy, float aspect, float znear, float zfar)
+{
+	fovy = fovy * M_PI / 180;
 	mat4 *mat = mat4_identity();
 	
 	float tanfovy = tan(fovy / 2.0);

@@ -4,4 +4,5 @@ main.c glad.c utils.c data_structures.c stb_image.c ^
 .\engine\shaders\shaders.c ^
 .\engine\models\models.c ^
 .\engine\textures\textures.c ^
+.\engine\voxels\voxel.c ^
 -o t.exe

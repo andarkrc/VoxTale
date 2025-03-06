@@ -11,8 +11,21 @@ static hashmap_t *model_map = NULL;
 vbuffer *vbuffer_create(void)
 {
 	vbuffer *buff = malloc(sizeof(*buff));
+	ASSERT(buff, ERR_MEM_FAIL);
 	buff->data = malloc(sizeof(float) * 12);
-	buff->size = 12;
+	ASSERT(buff->data, ERR_MEM_FAIL);
+	buff->size = 1;
+
+	return buff;
+}
+
+vbuffer *vbuffer_create_no_color(void)
+{
+	vbuffer *buff = malloc(sizeof(*buff));
+	ASSERT(buff, ERR_MEM_FAIL);
+	buff->data = malloc(sizeof(float) * 8);
+	ASSERT(buff->data, ERR_MEM_FAIL);
+	buff->size = 1;
 
 	return buff;
 }
@@ -91,7 +104,7 @@ vbuffer *model_load_from_obj(char *filename, char *model_name)
 		{
 			char *data[3];
 			vertex_number += 3;
-			vbuff->data = realloc(vbuff->data, vertex_number * sizeof(float) * 12);
+			vbuff->data = realloc(vbuff->data, vertex_number * sizeof(float) * 8);
 			ASSERT(vbuff->data, ERR_MEM_FAIL);
 			vbuff->size = vertex_number;
 			for (int i = 1; i <= 3; i++)
@@ -114,21 +127,16 @@ vbuffer *model_load_from_obj(char *filename, char *model_name)
 				float nyy = void_to_float(list_get(ny, norm_index));
 				float nzz = void_to_float(list_get(nz, norm_index));
 
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 0] = xx;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 1] = yy;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 2] = zz;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 0] = xx;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 1] = yy;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 2] = zz;
 
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 3] = uu;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 4] = vv;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 3] = uu;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 4] = vv;
 
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 5] = nxx;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 6] = nyy;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 7] = nzz;
-
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 8] = 1.0f;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 9] = 1.0f;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 10] = 1.0f;
-				vbuff->data[(vertex_number - 3 + i - 1) * 12 + 11] = 1.0f;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 5] = nxx;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 6] = nyy;
+				vbuff->data[(vertex_number - 3 + i - 1) * 8 + 7] = nzz;
 			}
 		}
 	}
@@ -149,15 +157,13 @@ vbuffer *model_load_from_obj(char *filename, char *model_name)
 
 	glBindVertexArray(vbuff->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbuff->vbo);
-	glBufferData(GL_ARRAY_BUFFER, vbuff->size * sizeof(float) * 12, vbuff->data, GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(8 * sizeof(float)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(5 * sizeof(float)));
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(3 * sizeof(float)));
+	glBufferData(GL_ARRAY_BUFFER, vbuff->size * sizeof(float) * 8, vbuff->data, GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
 
 	fclose(file);
 
@@ -299,9 +305,9 @@ vbuffer *model_load_from_obj_color(char *filename, char *model_name, float r, fl
 	glBindBuffer(GL_ARRAY_BUFFER, vbuff->vbo);
 	glBufferData(GL_ARRAY_BUFFER, vbuff->size * sizeof(float) * 12, vbuff->data, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(8 * sizeof(float)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(5 * sizeof(float)));
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(5 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void *)(8 * sizeof(float)));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
